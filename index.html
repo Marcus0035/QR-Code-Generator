@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--CSS-->
+    <link rel="stylesheet" href="css/style.css">
+    <title>QR Codes</title>
+</head>
+
+<body>
+    <main>
+        <div class="app">
+            <p>Enter text or URL</p>
+            <input type="text" id="qrInput">
+            <figure id="imgBox">
+                <img src="" alt="" id="qrImg">
+            </figure>
+            <button id="copyButton" onclick="copyClipboard()">Copy</button>
+            <button onclick="generateQR()">Generate QR Code</button>
+        </div>
+    </main>
+
+    <script>
+
+        const url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=";
+
+        let copyButton = document.getElementById("copyButton")
+        let qrInput = document.getElementById("qrInput");
+        let qrImg = document.getElementById("qrImg")
+
+        function generateQR() {
+            if (qrInput.value != "") {
+                try {
+                    qrImg.src = url + qrInput.value;
+                    qrImg.style.display = "block";
+                    copyButton.style.display = "block"
+                }
+                catch (e){
+                    console.log("Error" + e.message)
+                    qrImg.style.display = "none";
+                    copyButton.style.display = "none";
+                }
+            }
+            else {
+                alert("Input field is empty")
+                qrImg.style.display = "none";
+                copyButton.style.display = "none";
+            }
+        }
+
+        function copyClipboard(){
+            fetch(qrImg.src)
+                .then(response => response.blob())
+                .then(blob => {
+                    const item = new ClipboardItem({ "image/png": blob });
+                    navigator.clipboard.write([item]);
+                })
+                .then(() => {
+                    alert("QR code copied to clipboard!");
+                })
+                .catch(err => {
+                    console.error("Could not copy image: ", err);
+                });
+            }
+    </script>
+</body>
+
+</html>
